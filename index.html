@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadrinho Interativo Imersivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-world">
+        <header>
+            <h1>Meu Quadrinho Interativo</h1>
+            <p>Arraste cada balão para o quadro correto.</p>
+        </header>
+        <main class="comic-container">
+            <div id="panel1" class="comic-panel dropzone" data-target-id="1">
+                <div class="image-placeholder">Quadro 1</div>
+            </div>
+            <div id="panel2" class="comic-panel dropzone" data-target-id="2">
+                <div class="image-placeholder">Quadro 2</div>
+            </div>
+            <div id="panel3" class="comic-panel dropzone" data-target-id="3">
+                <div class="image-placeholder">Quadro 3</div>
+            </div>
+        </main>
+        <div class="speech-bubble draggable" data-bubble-id="2">
+            <p>Espere! O que é isso?</p>
+        </div>
+        <div class="speech-bubble draggable" data-bubble-id="3">
+            <p>Ah não! Corre!</p>
+        </div>
+        <div class="speech-bubble draggable" data-bubble-id="1">
+            <p>Frase 1 para quadro 1</p>
+        </div>
+        <div class="speech-bubble draggable" data-bubble-id="1">
+            <p>Frase 2 para quadro 1</p>
+        </div>
+        <footer id="feedback-message"></footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
