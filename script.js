@@ -1,52 +1,74 @@
 window.addEventListener('load', () => {
-    randomizeBubblePositions();
+    const feedbackMessage = document.getElementById('feedback-message');
+    const bubbles = document.querySelectorAll('.draggable');
+    bubbles.forEach(b => b.dataset.originParent = b.parentElement.id || '');
 
     interact('.dropzone').dropzone({
         accept: '.draggable',
-        overlap: 0.5,
+        overlap: 0.4,
         ondropactivate: (event) => event.target.classList.add('can-drop'),
         ondropdeactivate: (event) => event.target.classList.remove('can-drop'),
         ondrop: (event) => {
-            const draggableElement = event.relatedTarget;
-            const dropzoneElement = event.target;
-            const bubbleId = draggableElement.dataset.bubbleId;
-            const targetId = dropzoneElement.dataset.targetId;
-            const feedbackMessage = document.getElementById('feedback-message');
+            const draggable = event.relatedTarget;
+            const dropzone = event.target;
+            const bubbleId = String(draggable.dataset.bubbleId);
+            const targetId = String(dropzone.dataset.targetId);
 
             if (bubbleId === targetId) {
-                draggableElement.classList.add('correct');
-                draggableElement.style.position = 'absolute';
-                draggableElement.style.transform = '';
-                draggableElement.style.top = '50%';
-                draggableElement.style.left = '50%';
-                draggableElement.removeAttribute('data-x');
-                draggableElement.removeAttribute('data-y');
-                interact(draggableElement).unset();
+                const panelRect = dropzone.getBoundingClientRect();
+                const clientX = event.dragEvent.clientX;
+                const clientY = event.dragEvent.clientY;
+                let left = clientX - panelRect.left - (draggable.offsetWidth / 2);
+                let top = clientY - panelRect.top - (draggable.offsetHeight / 2);
+                const maxLeft = Math.max(0, dropzone.clientWidth - draggable.offsetWidth);
+                const maxTop = Math.max(0, dropzone.clientHeight - draggable.offsetHeight);
+                left = Math.max(0, Math.min(left, maxLeft));
+                top = Math.max(0, Math.min(top, maxTop));
+
+                draggable.classList.add('correct', 'placed');
+                draggable.style.position = 'absolute';
+                draggable.style.left = `${left}px`;
+                draggable.style.top = `${top}px`;
+                draggable.style.transform = '';
+                draggable.removeAttribute('data-x');
+                draggable.removeAttribute('data-y');
+                draggable.removeAttribute('data-start-x');
+                draggable.removeAttribute('data-start-y');
+                dropzone.appendChild(draggable);
+                interact(draggable).unset();
                 feedbackMessage.textContent = 'Correto!';
                 feedbackMessage.style.color = 'green';
-                dropzoneElement.appendChild(draggableElement);
             } else {
-                const originalX = parseFloat(draggableElement.getAttribute('data-start-x')) || 0;
-                const originalY = parseFloat(draggableElement.getAttribute('data-start-y')) || 0;
-                draggableElement.style.transform = `translate(${originalX}px, ${originalY}px)`;
-                draggableElement.setAttribute('data-x', originalX);
-                draggableElement.setAttribute('data-y', originalY);
+                const originId = draggable.dataset.originParent;
+                const origin = originId ? document.getElementById(originId) : document.getElementById('palette');
+                draggable.style.transform = '';
+                draggable.style.left = '';
+                draggable.style.top = '';
+                draggable.style.position = '';
+                draggable.classList.remove('placed');
+                origin.appendChild(draggable);
                 feedbackMessage.textContent = 'Tente novamente!';
                 feedbackMessage.style.color = 'red';
             }
         }
     });
 
+    const worldEl = document.getElementById('game-world');
+
     interact('.draggable').draggable({
         inertia: true,
-        modifiers: [
-            interact.modifiers.restrictRect({
-                restriction: 'parent',
-                endOnly: true
-            })
-        ],
         autoScroll: true,
-        listeners: { move: dragMoveListener }
+        listeners: {
+            start(event) {
+                const t = event.target;
+                t.classList.add('is-dragging'); // Añade clase mientras se arrastra
+                t.dataset.draggingFrom = t.parentElement.id || '';
+            },
+            move: dragMoveListener,
+            end(event) {
+                event.target.classList.remove('is-dragging'); // Remueve la clase
+            }
+        }
     });
 
     function dragMoveListener(event) {
@@ -57,23 +79,46 @@ window.addEventListener('load', () => {
         target.setAttribute('data-x', x);
         target.setAttribute('data-y', y);
     }
-
-    function randomizeBubblePositions() {
-        const bubbles = document.querySelectorAll('.draggable');
-        const gameWorld = document.getElementById('game-world');
-        const worldRect = gameWorld.getBoundingClientRect();
-
-        bubbles.forEach(bubble => {
-            const maxLeft = worldRect.width - bubble.offsetWidth - 20;
-            const maxTop = worldRect.height - bubble.offsetHeight - 20;
-            const randomLeft = Math.floor(Math.random() * maxLeft) + 10;
-            const randomTop = Math.floor(Math.random() * maxTop) + 10;
-            bubble.style.left = `${randomLeft}px`;
-            bubble.style.top = `${randomTop}px`;
-            bubble.setAttribute('data-start-x', '0');
-            bubble.setAttribute('data-start-y', '0');
-            bubble.setAttribute('data-x', '0');
-            bubble.setAttribute('data-y', '0');
-        });
-    }
 });
+interact('.draggable').draggable({
+        inertia: true,
+        autoScroll: true,
+        listeners: {
+            start(event) {
+                const t = event.target;
+                t.classList.add('is-dragging');
+                t.dataset.draggingFrom = t.parentElement.id || '';
+
+                // --- INICIO DE LA SOLUCIÓN ---
+                // 1. Obtener la posición actual del bocadillo en la pantalla
+                const rect = t.getBoundingClientRect();
+                const world = document.getElementById('game-world');
+                const worldRect = world.getBoundingClientRect();
+
+                // 2. Mover el bocadillo al 'game-world' para escapar del 'overflow' del sidebar
+                world.appendChild(t);
+
+                // 3. Establecer su posición absoluta relativa al 'game-world'
+                //    (posición del bocadillo - posición del 'game-world')
+                const newLeft = rect.left - worldRect.left;
+                const newTop = rect.top - worldRect.top;
+
+                t.style.position = 'absolute'; // Asegurarse de que sea 'absolute'
+                t.style.left = `${newLeft}px`;
+                t.style.top = `${newTop}px`;
+
+                // 4. Reiniciar el transform y los datos de 'interact.js'
+                //    para que el 'dragMoveListener' comience desde (0,0) en la nueva posición
+                t.style.transform = ''; 
+                t.setAttribute('data-x', 0);
+                t.setAttribute('data-y', 0);
+                // --- FIN DE LA SOLUCIÓN ---
+            },
+
+            move: dragMoveListener, // Tu función 'dragMoveListener' sigue igual
+
+            end(event) {
+                event.target.classList.remove('is-dragging'); // Esto ya lo tenías y está bien
+            }
+        }
+    });
