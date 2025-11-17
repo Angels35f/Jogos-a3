@@ -14,15 +14,15 @@ html, body {
 }
 
 header {
-    position: absolute;
+    position: fixed;
     top: 12px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    z-index: 10;
-    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 2000;
+    background-color: rgba(255, 255, 255, 0.95);
     padding: 8px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 footer {
@@ -38,10 +38,10 @@ footer {
     display: flex;
     gap: 16px;
     height: 100%;
-    padding: 80px 20px 60px 20px;
+    padding: 100px 20px 60px 20px; 
     box-sizing: border-box;
-    position: relative; /* Añadido */
-    z-index: 1; /* Añadido */
+    position: relative;
+    z-index: 1;
 }
 
 .main-area {
@@ -49,9 +49,9 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: visible; /* Cambiado de auto a visible */
-    position: relative; /* Añadido */
-    z-index: 1; /* Añadido */
+    overflow: visible;
+    position: relative;
+    z-index: 1;
 }
 
 .comic-container {
@@ -65,12 +65,13 @@ footer {
 .comic-panel {
     border: 3px solid #000;
     background-color: #fff;
-    width: 250px;
-    height: 250px;
     position: relative;
     transition: background-color 0.2s;
     box-sizing: border-box;
     z-index: 1;
+    overflow: hidden;
+    width: auto;
+    height: auto;
 }
 
 .image-placeholder {
@@ -85,7 +86,7 @@ footer {
 }
 
 .comic-panel.can-drop {
-    background-color: #e8f4ff;
+    background-color: #e8f7ff;
 }
 
 .sidebar {
@@ -95,7 +96,7 @@ footer {
     border-left: 1px solid #ddd;
     padding: 12px;
     box-sizing: border-box;
-    overflow: auto;
+    overflow:inherit;
 }
 
 .sidebar h2 {
@@ -107,12 +108,13 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    position: relative; /* Añadido */
-    min-height: 200px; /* Añadido - ajusta según necesites */
+    position: relative;
+    min-height: 200px; 
 }
 
+
 .palette-list .speech-bubble {
-    position: relative; /* Los elementos en la paleta son relativos */
+    position: relative;
     left: auto;
     top: auto;
     transform: none;
@@ -121,7 +123,7 @@ footer {
 .speech-bubble {
     background: #fff;
     border: 2px solid #000;
-    border-radius: 16px;
+    border-radius: 17px;
     padding: 10px 12px;
     width: auto;
     max-width: 220px;
@@ -131,8 +133,8 @@ footer {
     user-select: none;
     transition: transform 0.12s, box-shadow 0.12s;
     box-sizing: border-box;
-    position: absolute; /* Cambiado de relative a absolute */
-    z-index: 9999; /* Aumentado significativamente */
+    position: absolute; 
+    z-index: 9999; 
 }
 
 .speech-bubble.is-dragging {
@@ -145,23 +147,30 @@ footer {
     cursor: default;
     box-shadow: none;
     border-width: 3px;
-    z-index: 30; /* balões colocados ficam acima do painel */
+    z-index: 30; 
 }
-
 .speech-bubble:active {
     cursor: grabbing;
     transform: scale(1.03);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    box-shadow: 0 7px 18px rgba(0,0,0,0.15);
 }
 
 .speech-bubble.correct {
-    border-color: #28a745;
+    border-color: #28a775;
+    cursor: not-allowed !important; 
+}
+
+.panel-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 300px;
 }
 
 @media (max-width: 800px) {
     .app {
         flex-direction: column-reverse;
-        padding: 110px 12px 60px 12px;
+        padding: 110px 12px 70px 12px;
     }
     .sidebar {
         width: 100%;
@@ -185,4 +194,41 @@ footer {
         max-width: 320px;
         max-height: 320px;
     }
+}
+
+:root{
+    --page-bg: #fbf7f0;     
+    --header-bg: #0b63a5;   
+    --header-text: #ffffff;
+    --sidebar-bg: #fff6ee;   
+    --accent: #ff7043;       
+    --panel-border: #0b0b0b;
+}
+
+#game-world {
+    background-color: var(--page-bg);
+}
+
+header {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    box-shadow: 0 2px 10px rgba(11,99,165,0.12);
+}
+
+header h1, header p {
+    color: var(--header-text);
+}
+
+.sidebar {
+    background: var(--sidebar-bg);
+    border-left: 4px solid rgba(11,99,165,0.08);
+}
+
+.comic-panel {
+    border: 3px solid var(--panel-border);
+}
+
+#feedback-message {
+    color: var(--accent);
+    font-weight: 700;
 }
