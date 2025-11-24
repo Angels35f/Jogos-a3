@@ -232,3 +232,68 @@ header h1, header p {
     color: var(--accent);
     font-weight: 700;
 }
+
+.villain-hand {
+    position: fixed; 
+    font-size: 4rem; 
+    z-index: 20000; 
+    pointer-events: none; 
+    transition: all 1s ease-in-out; 
+    left: -100px; 
+    top: 50%;
+    filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.3));
+}
+
+.villain-hand.grabbing {
+    transform: scale(0.9) rotate(-15deg);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 30000;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    border: 5px solid var(--header-bg);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+    color: var(--header-bg);
+    font-size: 2.5em;
+    margin-top: 0;
+}
+
+.modal-content button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.modal-content button:hover {
+    background-color: #e64a19;
+}
